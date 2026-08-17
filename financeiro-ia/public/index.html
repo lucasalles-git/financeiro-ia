@@ -1,324 +1,122 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanças com IA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="tela-auth" class="tela active">
+    <div class="auth-card">
+      <div class="logo">💰</div>
+      <h1>Finanças com IA</h1>
+      <p class="subtitulo">Seu consultor financeiro inteligente</p>
+      <div id="form-login">
+        <input type="email" id="login-email" placeholder="Seu email" required>
+        <input type="password" id="login-senha" placeholder="Sua senha" required>
+        <button onclick="fazerLogin()" class="btn-primary">Entrar</button>
+        <p class="auth-toggle">Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
+      </div>
+      <div id="form-cadastro" style="display:none">
+        <input type="text" id="cad-nome" placeholder="Seu nome" required>
+        <input type="email" id="cad-email" placeholder="Seu email" required>
+        <input type="password" id="cad-senha" placeholder="Crie uma senha" required>
+        <button onclick="fazerCadastro()" class="btn-primary">Criar conta</button>
+        <p class="auth-toggle">Já tem conta? <a href="#" onclick="mostrarLogin()">Fazer login</a></p>
+      </div>
+    </div>
+  </div>
 
-:root {
-  --bg: #0f0f1a;
-  --card: #1a1a2e;
-  --card-hover: #222240;
-  --primary: #6c5ce7;
-  --primary-light: #a29bfe;
-  --green: #00b894;
-  --red: #ff6b6b;
-  --text: #e0e0e0;
-  --text-muted: #8888aa;
-  --border: #2a2a45;
-  --radius: 12px;
-}
+  <div id="tela-app" class="tela" style="display:none">
+    <header>
+      <div class="header-content">
+        <h1>💰 Finanças com IA</h1>
+        <div class="user-info">
+          <span id="nome-usuario"></span>
+          <button onclick="sair()" class="btn-sair">Sair</button>
+        </div>
+      </div>
+    </header>
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+    <nav class="nav-tabs">
+      <button class="tab active" data-tab="dashboard" onclick="mudarTab('dashboard')">📊 Dashboard</button>
+      <button class="tab" data-tab="transacoes" onclick="mudarTab('transacoes')">💳 Gastos</button>
+      <button class="tab" data-tab="assinaturas" onclick="mudarTab('assinaturas')">📋 Assinaturas</button>
+      <button class="tab" data-tab="metas" onclick="mudarTab('metas')">🎯 Metas</button>
+      <button class="tab" data-tab="ia" onclick="mudarTab('ia')">🤖 IA Financeira</button>
+    </nav>
 
-.tela { display: none; padding: 20px; }
-.tela.active { display: flex; }
+    <main>
+      <section id="tab-dashboard" class="tab-content active">
+        <div class="cards-resumo">
+          <div class="card receitas">
+            <span class="card-label">Receitas</span>
+            <span class="card-valor" id="resumo-receitas">R$ 0</span>
+          </div>
+          <div class="card despesas">
+            <span class="card-label">Despesas</span>
+            <span class="card-valor" id="resumo-despesas">R$ 0</span>
+          </div>
+          <div class="card saldo">
+            <span class="card-label">Saldo</span>
+            <span class="card-valor" id="resumo-saldo">R$ 0</span>
+          </div>
+        </div>
+        <div class="card-grafico">
+          <h3>Gastos por Categoria</h3>
+          <div id="grafico-categorias" class="grafico-barras"></div>
+        </div>
+      </section>
 
-#tela-auth {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
+      <section id="tab-transacoes" class="tab-content">
+        <div class="form-row">
+          <input type="text" id="input-descricao" placeholder="Ex: Ifood, Uber, Salário..." onkeyup="categorizarAutomatico(this.value)">
+          <input type="number" id="input-valor" placeholder="Valor (R$)" step="0.01">
+          <select id="input-tipo"><option value="despesa">💰 Despesa</option><option value="receita">📈 Receita</option></select>
+          <input type="text" id="input-categoria" placeholder="Categoria (ou automático)">
+          <button onclick="adicionarTransacao()" class="btn-primary">Adicionar</button>
+        </div>
+        <div id="lista-transacoes" class="lista"></div>
+      </section>
 
-.auth-card {
-  background: var(--card);
-  padding: 40px;
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
+      <section id="tab-assinaturas" class="tab-content">
+        <div class="form-row">
+          <input type="text" id="assinatura-nome" placeholder="Ex: Netflix, Spotify...">
+          <input type="number" id="assinatura-valor" placeholder="Valor mensal" step="0.01">
+          <input type="number" id="assinatura-dia" placeholder="Dia vencimento" min="1" max="31">
+          <button onclick="adicionarAssinatura()" class="btn-primary">Adicionar</button>
+        </div>
+        <div id="lista-assinaturas" class="lista"></div>
+        <div class="dica">💡 <strong>Total em assinaturas/mês:</strong> <span id="total-assinaturas">R$ 0</span></div>
+      </section>
 
-.logo { font-size: 64px; margin-bottom: 10px; }
-.auth-card h1 { font-size: 1.6em; margin-bottom: 5px; }
-.subtitulo { color: var(--text-muted); margin-bottom: 25px; }
+      <section id="tab-metas" class="tab-content">
+        <div class="form-row">
+          <input type="text" id="meta-nome" placeholder="Ex: Viagem, Reserva de emergência...">
+          <input type="number" id="meta-valor" placeholder="Valor da meta" step="0.01">
+          <input type="date" id="meta-prazo">
+          <button onclick="adicionarMeta()" class="btn-primary">Criar Meta</button>
+        </div>
+        <div id="lista-metas" class="lista"></div>
+      </section>
 
-.auth-card input {
-  width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.auth-card input:focus { outline: none; border-color: var(--primary); }
-
-.auth-toggle { margin-top: 15px; font-size: 0.9em; color: var(--text-muted); }
-.auth-toggle a { color: var(--primary-light); cursor: pointer; text-decoration: none; }
-
-header {
-  background: var(--card);
-  padding: 15px 20px;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-content h1 { font-size: 1.3em; }
-
-.user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9em; color: var(--text-muted); }
-
-.nav-tabs {
-  display: flex;
-  gap: 0;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  padding: 0 10px;
-}
-
-.tab {
-  padding: 12px 18px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--primary-light); border-bottom-color: var(--primary); }
-
-main { max-width: 1000px; margin: 20px auto; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-.cards-resumo {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.card {
-  background: var(--card);
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-}
-
-.card-label { display: block; font-size: 0.85em; color: var(--text-muted); margin-bottom: 8px; }
-.card-valor { font-size: 1.6em; font-weight: 700; }
-.card.receitas .card-valor { color: var(--green); }
-.card.despesas .card-valor { color: var(--red); }
-.card.saldo .card-valor { color: var(--primary-light); }
-
-.card-grafico {
-  background: var(--card);
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.card-grafico h3 { margin-bottom: 15px; font-size: 1em; color: var(--text-muted); }
-
-.grafico-barras { display: flex; flex-direction: column; gap: 10px; }
-
-.barra-item { display: flex; align-items: center; gap: 10px; }
-
-.barra-label { min-width: 120px; font-size: 0.85em; color: var(--text-muted); }
-
-.barra-container {
-  flex: 1;
-  height: 24px;
-  background: var(--bg);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.barra-preenchimento {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  font-size: 0.8em;
-  font-weight: 600;
-  transition: width 0.5s;
-  min-width: fit-content;
-  padding-right: 8px;
-}
-
-.form-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-  background: var(--card);
-  padding: 15px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-}
-
-.form-row input, .form-row select {
-  flex: 1;
-  min-width: 120px;
-  padding: 10px 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.form-row input:focus { outline: none; border-color: var(--primary); }
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
-.btn-primary:hover { background: #5a4bd1; }
-
-.btn-sair {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn-sair:hover { border-color: var(--red); color: var(--red); }
-
-.btn-danger {
-  background: none;
-  border: 1px solid var(--red);
-  color: var(--red);
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.btn-danger:hover { background: var(--red); color: white; }
-
-.lista { display: flex; flex-direction: column; gap: 8px; }
-
-.item-lista {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--card);
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.item-info { display: flex; flex-direction: column; gap: 2px; }
-.item-descricao { font-size: 0.95em; }
-.item-categoria { font-size: 0.8em; color: var(--text-muted); }
-.item-valor { font-weight: 600; }
-.item-valor.despesa { color: var(--red); }
-.item-valor.receita { color: var(--green); }
-.item-acoes { display: flex; gap: 8px; align-items: center; }
-
-.meta-progresso {
-  width: 100px;
-  height: 6px;
-  background: var(--bg);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.meta-progresso-preenchimento {
-  height: 100%;
-  background: var(--green);
-  border-radius: 3px;
-  transition: width 0.5s;
-}
-
-.chat-container {
-  background: var(--card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.chat-mensagens {
-  padding: 20px;
-  max-height: 400px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.msg { padding: 12px 16px; border-radius: 12px; max-width: 85%; line-height: 1.5; }
-
-.msg.ia { background: var(--bg); align-self: flex-start; border: 1px solid var(--border); }
-.msg.usuario { background: var(--primary); color: white; align-self: flex-end; }
-.msg.usuario strong { display: none; }
-
-.chat-input {
-  display: flex;
-  gap: 10px;
-  padding: 15px;
-  border-top: 1px solid var(--border);
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 10px 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.chat-input input:focus { outline: none; border-color: var(--primary); }
-
-.dica {
-  margin-top: 15px;
-  padding: 12px 16px;
-  background: rgba(108, 92, 231, 0.1);
-  border: 1px solid var(--primary);
-  border-radius: 8px;
-  font-size: 0.9em;
-}
-
-@media (max-width: 600px) {
-  .cards-resumo { grid-template-columns: 1fr; }
-  .form-row { flex-direction: column; }
-  .form-row input, .form-row select { min-width: 100%; }
-  .tab { font-size: 13px; padding: 10px 12px; }
-}
+      <section id="tab-ia" class="tab-content">
+        <div class="chat-container">
+          <div id="chat-mensagens" class="chat-mensagens">
+            <div class="msg ia">
+              <strong>🤖 Consultor:</strong>
+              <p>Olá! Sou seu consultor financeiro. Pergunte o que quiser sobre suas finanças. Ex: "Onde estou gastando mais?", "Quanto posso economizar?", "Vale a pena cancelar assinaturas?"</p>
+            </div>
+          </div>
+          <div class="chat-input">
+            <input type="text" id="input-pergunta" placeholder="Faça uma pergunta sobre suas finanças..." onkeypress="if(event.key==='Enter') perguntarIA()">
+            <button onclick="perguntarIA()" class="btn-primary">Enviar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
