@@ -160,7 +160,7 @@ app.post('/api/ia/perguntar', autenticar, async (req, res) => {
     });
     res.json({ resposta: response.choices[0].message.content });
   } catch (err) {
-    console.error('ERRO IA perguntar:', err.message);   // ← mostra o erro real no log
+    console.error('ERRO IA perguntar:', err.message);
     res.status(500).json({ erro: 'Erro ao consultar IA. Verifique sua chave API.' });
   }
 });
@@ -179,7 +179,7 @@ app.post('/api/ia/categorizar', autenticar, async (req, res) => {
     });
     res.json({ categoria: response.choices[0].message.content.trim() });
   } catch (err) {
-    console.error('ERRO IA categorizar:', err.message);   // ← mostra o erro real no log
+    console.error('ERRO IA categorizar:', err.message);
     res.json({ categoria: 'Outros' });
   }
 });
